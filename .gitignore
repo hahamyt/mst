@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+.idea
+.cadence
+
 # Distribution / packaging
 .Python
 build/
@@ -54,6 +57,14 @@ cover/
 # Translations
 *.mo
 *.pot
+*.pth
+*.pdf
+*.mat
+*.npy
+*.pyc
+*/__pycache__
+
+
 
 # Django stuff:
 *.log

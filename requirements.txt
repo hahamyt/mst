@@ -1,0 +1,16 @@
+numpy==1.23
+opencv-python==4.7.0.68
+matplotlib==3.3.4
+torch==1.13.1
+torchvision==0.14.1
+albumentations==0.5.2
+PyYAML==6.0
+easydict==1.9
+tensorboard==2.8.0
+albumentations==0.5.2
+mmcv==1.6.2
+timm==0.6.11
+Cython==0.29.32
+protobuf~=3.20
+einops==0.6.0
+scikit-image==0.19.3
