@@ -7,6 +7,13 @@ Codes and data will be coming in few days...
 
 Online [Demo](http://img2latex.com/).
 
+## Download weights
+
+[+UpConv-3s](https://drive.google.com/file/d/1L5GNWvpcO5ZZgfJEeLu6c3P2Cw_4vZb1/view?usp=sharing)
+
+[+UpConv-6s](https://drive.google.com/file/d/1oWwpr4awRycWty5K8JSSF_EPyBxUoGtI/view?usp=sharing)
+
+## Eval
 
 ```shell
 python evaluate_model.py NoBRS --gpu=1 --checkpoint=weights/upconv-3s.pth --datasets=DAVIS --cf-n=3 --acf --n-clicks 20 --target-iou 0.9 --inference_size 224
@@ -17,6 +24,7 @@ python evaluate_model.py NoBRS --gpu=1 --checkpoint=weights/upconv-3s.pth --data
 ```shell
 python evaluate_model.py NoBRS --gpu=1 --checkpoint=weights/upconv-6s.pth --datasets=DAVIS --cf-n=3 --acf --n-clicks 20 --target-iou 0.9 --inference_size 224
 ```
+
 
 
 ## Citation
