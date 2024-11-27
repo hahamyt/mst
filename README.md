@@ -9,9 +9,9 @@ Online [Demo](http://img2latex.com/).
 
 ## Download weights
 
-[+AT-3s](https://drive.google.com/file/d/1hK5MVbuUbw41EfM42BLsoFFkFeiSCzZH/view?usp=sharing)
+[+IT-3s](https://drive.google.com/file/d/1DbS5b2hvQSp5mjNXrTh7Mf1X_de_fZfx/view?usp=sharing)
 
-[+AT-6s](https://drive.google.com/file/d/11YaacgBITDN_FEISwJob4t1MBp3bl7WV/view?usp=sharing)
+[+IT-6s](https://drive.google.com/file/d/1Z3-WqNyQl3WzvAXuPQR1IgQRjzE_JYhf/view?usp=sharing)
 
 ## Eval
 

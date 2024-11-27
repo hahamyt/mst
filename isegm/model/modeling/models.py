@@ -68,9 +68,9 @@ class ScoreBlock(nn.Module):
         # Step 1
         mask = base_idxs[:, :(n_p//2)] >= 0
         ids = base_idxs[:, :(n_p//2)].clone().long()
-        ids[~mask] = 0
+        ids[~mask] = 0                  # 将无点击区域的id置为0
 
-        tokens = batched_index_select(x_b, 1, ids) * mask.unsqueeze(-1)
+        tokens = batched_index_select(x_b, 1, ids) * mask.unsqueeze(-1) # 提取点击区域的tokens，并将无点击区域的id置为0
         kernels = []
         # Step 2
         attn_scores = []
@@ -86,9 +86,11 @@ class ScoreBlock(nn.Module):
 
         pos_scores = torch.stack(attn_scores)
         # Step 3
-        k = x_s.shape[1]//8
+        valid_k = [min(x_s.shape[1]//8, (pos_scores[x]>0.65).sum().item()) for x in range(B)]
+        k = x_s.shape[1]//8 # 使用固定尺寸的tokens交互， max(valid_k) # min(128, (pos_scores[np.random.randint(B)-1]>0.8).sum())        # 自适应选择交互的数量k
         topk_score, index = torch.topk(pos_scores, k=k)
         one_hot = F.one_hot(index, pnum_s)
+
         selected = torch.mul(topk_score[:, :, None].repeat([1, 1, pnum_s]), one_hot)
         binary_selected = (selected > 0.0).float()
         selected = selected + (binary_selected - selected).detach()
@@ -201,6 +203,8 @@ class Block(nn.Module):
         if self.use_score:
             self.depth = depth
             self.score_s = ScoreBlock(dim, sr_ratio=1)
+            # self.score_l = ScoreBlock(dim, sr_ratio=1)
+
             self.norm3 = norm_layer(dim)
             self.norm4 = norm_layer(dim)
             self.score_cross_attn = CrossAttention(dim)
@@ -222,17 +226,21 @@ class Block(nn.Module):
         tokens = {}
         if self.use_score:
             indices_s, index_s, pos_scores_s, x_s, kernel_s = self.score_s(x_b, x_s, idxs[0])
+            sel_tokens_s = extract_patches_from_indicators(x_s, indices_s) + \
+                           extract_patches_from_indicators(pos_emb_s.repeat(B, 1, 1), indices_s)
 
-            x_b_ = self.score_cross_attn(self.norm3(x_b), self.norm4(x_s))
+            x_b_ = self.score_cross_attn(self.norm3(x_b), self.norm4(sel_tokens_s))
             x_b = x_b + x_b_
             x_b = x_b + self.score_mlp(self.norm5(x_b))
 
-            tokens['sel_tokens_s'] = x_s
-            tokens['idx_tokens_s'] = torch.range(0, x_s.shape[1]-1).unsqueeze(0).repeat(B, 1).type_as(x_s).long()
-            tokens['sel_tokens_l'] = x_l
-            tokens['idx_tokens_l'] = torch.range(0, x_l.shape[1]-1).unsqueeze(0).repeat(B, 1).type_as(x_s).long()
+            tokens['sel_tokens_s'] = sel_tokens_s
+            tokens['idx_tokens_s'] = index_s
+            tokens['sel_tokens_l'] = torch.zeros_like(x_s)
+            tokens['idx_tokens_l'] = torch.range(0, x_s.shape[1]-1).unsqueeze(0).repeat(B, 1).type_as(x_s).long() # index_s # torch.range(0, x_l.shape[1]-1).unsqueeze(0).repeat(B, 1).type_as(x_s).long() # index_l
 
             tokens['kernel_s'] = kernel_s
+            tokens['kernel_l'] = torch.zeros_like(kernel_s)
+
             tokens['pos_scores_s'] = pos_scores_s
 
         x_b_ = self.attn(self.norm1(x_b))
