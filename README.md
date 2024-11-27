@@ -9,9 +9,13 @@ Online [Demo](http://img2latex.com/).
 
 ## Download weights
 
-[+IT-3s](https://drive.google.com/file/d/1DbS5b2hvQSp5mjNXrTh7Mf1X_de_fZfx/view?usp=sharing)
+[+MST-3s](https://drive.google.com/file/d/1Qpf_6YOgXIz_NYtqQ8QpxPWe4QwDxe2r/view?usp=sharing)
 
-[+IT-6s](https://drive.google.com/file/d/1Z3-WqNyQl3WzvAXuPQR1IgQRjzE_JYhf/view?usp=sharing)
+[+MST+CL-3s](https://drive.google.com/file/d/1GvKId2AKjRwWF-PxjOvrutbFJkdW8ZbN/view?usp=sharing)
+
+[+MST-6s](https://drive.google.com/file/d/1fq971Pa4nQeg1hQ8y5orfVUcJRmmzRXG/view?usp=sharing)
+
+[+MST+CL-6s](https://drive.google.com/file/d/1uWkmKH8KcAPYa3WMpi1rKgzeBBS-kQ6M/view?usp=sharing)
 
 ## Eval
 
