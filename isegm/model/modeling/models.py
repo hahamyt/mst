@@ -1,4 +1,3 @@
-import einops
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -30,6 +29,14 @@ class Mlp(nn.Module):
 class ScoreBlock(nn.Module):
     def __init__(self, in_dim, sr_ratio=1):
         super().__init__()
+
+        self.norm1 = nn.LayerNorm(in_dim)
+        self.norm2 = nn.LayerNorm(in_dim)
+        self.norm3 = nn.LayerNorm(in_dim)
+
+        self.cross_attn = CrossAttention(in_dim, sr_ratio=sr_ratio)
+        self.cross_mlp = Mlp(in_features=in_dim, drop=0.0)
+
         self.apply(self._init_weights)
 
     def _init_weights(self, m):
@@ -50,16 +57,20 @@ class ScoreBlock(nn.Module):
     def norm_0_1(self, x):
         return (x + 1) / 2
 
-    def forward(self, x_b, x_s, base_idxs, k=10):
+    def forward(self, x_b, x_s, base_idxs):
         B, n_p = base_idxs.shape
         _, pnum_s, C = x_s.shape
+
+        x_s_, attn = self.cross_attn(self.norm1(x_s), self.norm2(x_b), return_attn=True)
+        x_s = x_s + x_s_
+        x_s = x_s + self.cross_mlp(self.norm3(x_s))
 
         # Step 1
         mask = base_idxs[:, :(n_p//2)] >= 0
         ids = base_idxs[:, :(n_p//2)].clone().long()
         ids[~mask] = 0
 
-        tokens = batched_index_select(x_b, 1, ids) * mask.unsqueeze(-1) 
+        tokens = batched_index_select(x_b, 1, ids) * mask.unsqueeze(-1)
         kernels = []
         # Step 2
         attn_scores = []
@@ -67,14 +78,15 @@ class ScoreBlock(nn.Module):
             if True not in mask[i]:
                 kernels.append(tokens[i].mean(dim=0, keepdim=True))
                 attn_scores.append(
-                    self.norm_0_1(F.cosine_similarity(x_s[i, :, :], kernels[i]).squeeze())*0.0)  
+                    self.norm_0_1(F.cosine_similarity(x_s[i, :, :], kernels[i]).squeeze())*0.0)  # 这种计算相似度的方式配合Triplet Loss非常香（看起来）
             else:
                 kernels.append(tokens[i][mask[i]].mean(dim=0, keepdim=True))
                 attn_scores.append(
-                    self.norm_0_1(F.cosine_similarity(x_s[i, :, :], kernels[i]).squeeze()))  
+                    self.norm_0_1(F.cosine_similarity(x_s[i, :, :], kernels[i]).squeeze()))  # 这种计算相似度的方式配合Triplet Loss非常香（看起来）
 
         pos_scores = torch.stack(attn_scores)
-        k = x_s.shape[1]//8 
+        # Step 3
+        k = x_s.shape[1]//8
         topk_score, index = torch.topk(pos_scores, k=k)
         one_hot = F.one_hot(index, pnum_s)
         selected = torch.mul(topk_score[:, :, None].repeat([1, 1, pnum_s]), one_hot)
@@ -178,7 +190,6 @@ class CrossAttention(nn.Module):
         else:
             return x
 
-
 class Block(nn.Module):
     def __init__(self, dim, num_heads, mlp_ratio=4., mlp_drop=0.0, qkv_bias=False, attn_drop=0.,
         proj_drop=0., act_layer=nn.GELU, norm_layer=nn.LayerNorm, use_score=False, depth=0):
@@ -189,14 +200,13 @@ class Block(nn.Module):
         self.use_score = use_score
         if self.use_score:
             self.depth = depth
-            self.sr_s = nn.ConvTranspose2d(dim, dim, kernel_size=2, stride=2)
-            self.norm_s = nn.LayerNorm(dim)
-
+            self.score_s = ScoreBlock(dim, sr_ratio=1)
             self.norm3 = norm_layer(dim)
             self.norm4 = norm_layer(dim)
+            self.score_cross_attn = CrossAttention(dim)
+
             self.norm5 = norm_layer(dim)
             self.score_mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=mlp_drop)
-            self.score_cross_attn = CrossAttention(dim)
 
         self.norm1 = norm_layer(dim)
         self.attn = Attention(dim, num_heads=num_heads, qkv_bias=qkv_bias, attn_drop=attn_drop,
@@ -211,22 +221,19 @@ class Block(nn.Module):
 
         tokens = {}
         if self.use_score:
-            W = H = int(np.sqrt(x_b.shape[1]))
-            x_s_ = x_b.permute(0, 2, 1).reshape(B, C, H, W)
-            x_s_ = self.sr_s(x_s_).reshape(B, C, -1).permute(0, 2, 1)
-            if blk_depth == 1:
-                x_s = self.norm_s(x_s_) + x_s
-            else:
-                x_s = self.norm_s(x_s_)
+            indices_s, index_s, pos_scores_s, x_s, kernel_s = self.score_s(x_b, x_s, idxs[0])
 
             x_b_ = self.score_cross_attn(self.norm3(x_b), self.norm4(x_s))
             x_b = x_b + x_b_
             x_b = x_b + self.score_mlp(self.norm5(x_b))
 
             tokens['sel_tokens_s'] = x_s
-            tokens['idx_tokens_s'] = torch.range(0, x_s.shape[1]-1).unsqueeze(0).repeat(B, 1).type_as(x_s).long() # index_s
+            tokens['idx_tokens_s'] = torch.range(0, x_s.shape[1]-1).unsqueeze(0).repeat(B, 1).type_as(x_s).long()
             tokens['sel_tokens_l'] = x_l
-            tokens['idx_tokens_l'] = torch.range(0, x_l.shape[1]-1).unsqueeze(0).repeat(B, 1).type_as(x_s).long() # index_l
+            tokens['idx_tokens_l'] = torch.range(0, x_l.shape[1]-1).unsqueeze(0).repeat(B, 1).type_as(x_s).long()
+
+            tokens['kernel_s'] = kernel_s
+            tokens['pos_scores_s'] = pos_scores_s
 
         x_b_ = self.attn(self.norm1(x_b))
         x_b = x_b + x_b_

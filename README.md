@@ -9,20 +9,20 @@ Online [Demo](http://img2latex.com/).
 
 ## Download weights
 
-[+UpConv-3s](https://drive.google.com/file/d/1L5GNWvpcO5ZZgfJEeLu6c3P2Cw_4vZb1/view?usp=sharing)
+[+AT-3s](https://drive.google.com/file/d/1hK5MVbuUbw41EfM42BLsoFFkFeiSCzZH/view?usp=sharing)
 
-[+UpConv-6s](https://drive.google.com/file/d/1oWwpr4awRycWty5K8JSSF_EPyBxUoGtI/view?usp=sharing)
+[+AT-6s](https://drive.google.com/file/d/11YaacgBITDN_FEISwJob4t1MBp3bl7WV/view?usp=sharing)
 
 ## Eval
 
 ```shell
-python evaluate_model.py NoBRS --gpu=1 --checkpoint=weights/upconv-3s.pth --datasets=DAVIS --cf-n=3 --acf --n-clicks 20 --target-iou 0.9 --inference_size 224
+python evaluate_model.py NoBRS --gpu=1 --checkpoint=weights/at-3s.pth --datasets=DAVIS --cf-n=3 --acf --n-clicks 20 --target-iou 0.9 --inference_size 224
 ```
 
 [3s (intervel = 4), 6s (intervel = 2)](isegm/model/modeling/models.py)
 
 ```shell
-python evaluate_model.py NoBRS --gpu=1 --checkpoint=weights/upconv-6s.pth --datasets=DAVIS --cf-n=3 --acf --n-clicks 20 --target-iou 0.9 --inference_size 224
+python evaluate_model.py NoBRS --gpu=1 --checkpoint=weights/at-6s.pth --datasets=DAVIS --cf-n=3 --acf --n-clicks 20 --target-iou 0.9 --inference_size 224
 ```
 
 
