@@ -20,13 +20,13 @@ Online [Demo](http://img2latex.com/).
 ## Eval
 
 ```shell
-python evaluate_model.py NoBRS --gpu=1 --checkpoint=weights/at-3s.pth --datasets=DAVIS --cf-n=3 --acf --n-clicks 20 --target-iou 0.9 --inference_size 224
+python evaluate_model.py NoBRS --gpu=1 --checkpoint=weights/mst-3s.pth --datasets=DAVIS --cf-n=3 --acf --n-clicks 20 --target-iou 0.9 --inference_size 224
 ```
 
 [3s (intervel = 4), 6s (intervel = 2)](isegm/model/modeling/models.py)
 
 ```shell
-python evaluate_model.py NoBRS --gpu=1 --checkpoint=weights/at-6s.pth --datasets=DAVIS --cf-n=3 --acf --n-clicks 20 --target-iou 0.9 --inference_size 224
+python evaluate_model.py NoBRS --gpu=1 --checkpoint=weights/mst-6s.pth --datasets=DAVIS --cf-n=3 --acf --n-clicks 20 --target-iou 0.9 --inference_size 224
 ```
 
 
