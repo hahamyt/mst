@@ -79,7 +79,7 @@ class AdaptiveVisionTransformer(nn.Module):
         self.img_size = to_2tuple(img_size)
         norm_layer = norm_layer if norm_layer else partial(nn.LayerNorm, eps=1e-6)
 
-        intervel = 4
+        intervel = 8
         self.blocks = nn.Sequential(*[
             Block(dim=embed_dim, num_heads=num_heads, mlp_ratio=mlp_ratio, qkv_bias=qkv_bias,
                   attn_drop=attn_drop_rate, proj_drop=proj_drop_rate, norm_layer=norm_layer,

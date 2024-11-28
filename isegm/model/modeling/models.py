@@ -221,6 +221,8 @@ class MoECrossAttention(nn.Module):
             self.sr = nn.Conv2d(dim, dim, kernel_size=sr_ratio, stride=sr_ratio)
             self.norm = nn.LayerNorm(dim)
 
+        self.k = self.v = None
+
         self.apply(self._init_weights)
     def _init_weights(self, m):
         if isinstance(m, nn.Linear):
@@ -242,16 +244,23 @@ class MoECrossAttention(nn.Module):
         y = x if y is None else y
         q = self.q(x).reshape(B, N, self.num_heads, C // self.num_heads).permute(0, 2, 1, 3)
 
-        W = H = int(np.sqrt(y.shape[1]))
-        if self.sr_ratio > 1:
-            y_ = y.permute(0, 2, 1).reshape(B, C, H, W)
-            y_ = self.sr(y_).reshape(B, C, -1).permute(0, 2, 1)
-            y_ = self.norm(y_)
-            kv = self.kv(y_).reshape(B, -1, 2, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
+        if token_types[0][0] == 1:
+            k = self.k
+            v = self.v
         else:
-            kv = self.kv(y).reshape(B, -1, 2, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
+            if self.sr_ratio > 1:
+                W = H = int(np.sqrt(y.shape[1]))
+                y_ = y.permute(0, 2, 1).reshape(B, C, H, W)
+                y_ = self.sr(y_).reshape(B, C, -1).permute(0, 2, 1)
+                y_ = self.norm(y_)
+                kv = self.kv(y_).reshape(B, -1, 2, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
+            else:
+                kv = self.kv(y).reshape(B, -1, 2, self.num_heads, C // self.num_heads).permute(2, 0, 3, 1, 4)
 
-        k, v = kv[0], kv[1]
+            k, v = kv[0], kv[1]
+            self.k = k
+            self.v = v
+
         attn = (q @ k.transpose(-2, -1)) * self.scale
         attn_ = attn.softmax(dim=-1)
         attn = self.attn_drop(attn_)
@@ -315,7 +324,7 @@ class Block(nn.Module):
         self.use_score = use_score
         if self.use_score:
             self.depth = depth
-            self.score = ScoreBlock(dim, sr_ratio=1)
+            self.score = ScoreBlock(dim, sr_ratio=4)
 
             self.norm3 = norm_layer(dim)
             self.norm4 = norm_layer(dim)
@@ -325,9 +334,10 @@ class Block(nn.Module):
             self.norm7 = norm_layer(dim)
             self.score_l_s = CrossAttention(dim, num_heads=2)
             self.gamma = nn.Parameter(torch.zeros(1, 1, dim), requires_grad=True)
+            self.gamma2 = nn.Parameter(torch.zeros(1, 1, dim), requires_grad=True)
 
-            self.norm5 = norm_layer(dim)
-            self.score_mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=mlp_drop)
+            # self.norm5 = norm_layer(dim)
+            # self.score_mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=mlp_drop)
 
         self.norm1 = norm_layer(dim)
         self.attn = Attention(dim, num_heads=num_heads, qkv_bias=qkv_bias, attn_drop=attn_drop,
@@ -353,8 +363,7 @@ class Block(nn.Module):
             sel_tokens_s = sel_tokens_s + self.score_l_s(self.norm6(sel_tokens_s), self.norm7(sel_tokens_l)) * self.gamma
 
             x_b_ = self.score_cross_attn(self.norm3(x_b), self.norm4(sel_tokens_s))
-            x_b = x_b + x_b_
-            x_b = x_b + self.score_mlp(self.norm5(x_b))
+            x_b = x_b + x_b_ * self.gamma2
 
             tokens['sel_tokens_s'] = sel_tokens_s
             tokens['idx_tokens_s'] = index_s
