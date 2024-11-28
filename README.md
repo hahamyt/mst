@@ -5,12 +5,12 @@
 </p>
 
 <p>
-Interactive segmentation has gained significant attention due to its applications in human-computer interaction and data annotation. To address the challenge of target scale variations in interactive segmentation, we propose a novel multi-scale token fusion algorithm. \textcolor{red}{This algorithm selectively fuses only the most important tokens, enabling the model to better capture multi-scale characteristics in important regions.}
+Interactive segmentation has gained significant attention due to its applications in human-computer interaction and data annotation. To address the challenge of target scale variations in interactive segmentation, we propose a novel multi-scale token fusion algorithm. This algorithm selectively fuses only the most important tokens, enabling the model to better capture multi-scale characteristics in important regions.
 To further enhance the robustness of multi-scale token selection, we introduce a token learning algorithm based on contrastive loss. This algorithm fully utilizes the discriminative information between target and background multi-scale tokens, effectively improving the quality of selected tokens. Extensive benchmark testing demonstrates the effectiveness of our approach in addressing multi-scale issues.
 </p>
 
 ## Environment
-Training and evaluation environment: Python 3.9, PyTorch 1.13.1, CUDA 11.0. Run the following command to install required packages.
+Training and evaluation environment: Python 3.9+, PyTorch > 1.0, CUDA. Run the following command to install required packages.
 ```
 pip install -r requirements.txt
 ```
