@@ -334,10 +334,8 @@ class Block(nn.Module):
             self.norm7 = norm_layer(dim)
             self.score_l_s = CrossAttention(dim, num_heads=2)
             self.gamma = nn.Parameter(torch.zeros(1, 1, dim), requires_grad=True)
-            self.gamma2 = nn.Parameter(torch.zeros(1, 1, dim), requires_grad=True)
-
-            # self.norm5 = norm_layer(dim)
-            # self.score_mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=mlp_drop)
+            self.norm5 = norm_layer(dim)
+            self.score_mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=mlp_drop)
 
         self.norm1 = norm_layer(dim)
         self.attn = Attention(dim, num_heads=num_heads, qkv_bias=qkv_bias, attn_drop=attn_drop,
@@ -363,7 +361,9 @@ class Block(nn.Module):
             sel_tokens_s = sel_tokens_s + self.score_l_s(self.norm6(sel_tokens_s), self.norm7(sel_tokens_l)) * self.gamma
 
             x_b_ = self.score_cross_attn(self.norm3(x_b), self.norm4(sel_tokens_s))
-            x_b = x_b + x_b_ * self.gamma2
+            x_b = x_b + x_b_
+            x_b = x_b + self.score_mlp(self.norm5(x_b))
+
 
             tokens['sel_tokens_s'] = sel_tokens_s
             tokens['idx_tokens_s'] = index_s

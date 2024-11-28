@@ -166,18 +166,11 @@ def get_predictor_and_zoomin_params(args, dataset_name, apply_zoom_in=True, eval
         if args.clicks_limit == -1:
             args.clicks_limit = args.n_clicks
         predictor_params['net_clicks_limit'] = args.clicks_limit
-    if args.mode not in ['SAM', 'HQSAM', 'HQSAM_CUSTOM']:
-        zoom_in_params = None
-        if dataset_name == 'DAVIS' and args.mode not in ['SAM', 'HQSAM', 'HQSAM_CUSTOM']:
-            crop_size = int(int(args.inference_size)*1.5)
-        else:
-            crop_size = int(args.inference_size)
-        zoom_in_params = {
-            'skip_clicks': -1,
-            'target_size': (crop_size, crop_size)
-        }
-    else:
-        zoom_in_params = None
+    crop_size = int(args.inference_size)
+    zoom_in_params = {
+        'skip_clicks': -1,
+        'target_size': (crop_size, crop_size)
+    }
 
     return predictor_params, zoom_in_params
 
