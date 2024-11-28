@@ -50,7 +50,7 @@ A script `download_datasets.sh` is prepared to download and organize required da
 
 ## Demo
 
-Online [Demo](http://img2latex.com/)[Coming Soon].
+Online [Demo](http://img2latex.com/) (Coming Soon).
 
 <p align="center">
   <img src="./assets/img/demo1.gif" alt="drawing", width="500"/>
@@ -65,7 +65,7 @@ python demo.py --checkpoint=weights/mst-3s-slim-448-base.pth --gpu 0
 
 Before evaluation, please download the datasets and models, and then configure the path in `config.yml`.
 
-Download our model, please download below 3 zipped files and extract before use:
+Download our model, please download below zipped files and extract before use:
 
 - [Model Zoo](https://cuhko365-my.sharepoint.com/:f:/g/personal/xulong_cuhk_edu_cn/EjwcfWorCwZGsOayrEP9ymkBhHnlnACdFYpVDgEoCVqupA?e=wh45gO)
 
