@@ -15,7 +15,7 @@ Training and evaluation environment: Python 3.9+, PyTorch > 1.0, CUDA. Run the f
 pip install -r requirements.txt
 ```
 
-You need to configue the paths to the datasets in `config.yml` before training or testing. 
+You need to configue the paths to the datasets in `config.yml` before training or testing. If you have any questions, please feel free to open an Issue.
 
 ## Dataset
 
