@@ -1,5 +1,7 @@
 ## [MST: Adaptive Multi-Scale Tokens Guided Interactive Segmentation](https://arxiv.org/abs/2401.04403)
 
+[![arXiv](https://img.shields.io/badge/arXiv-2401.04403-b31b1b.svg)](https://arxiv.org/abs/2401.04403)
+
 <p align="center">
   <img src="./assets/img/framework.png" alt="drawing", width="600"/>
 </p>
@@ -44,6 +46,9 @@ A script `download_datasets.sh` is prepared to download and organize required da
 [COCO_MVal]: https://github.com/saic-vul/fbrs_interactive_segmentation/releases/download/v1.0/COCO_MVal.zip
 
 ## Demo
+
+Online [Demo](http://img2latex.com/).
+
 <p align="center">
   <img src="./assets/img/demo1.gif" alt="drawing", width="500"/>
 </p>
