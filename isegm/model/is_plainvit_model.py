@@ -1,13 +1,8 @@
-import math
-import torch
 import torch.nn as nn
-
 from isegm.utils.serialization import serialize
 from .is_model import ISModel
 from .modeling.modules_vit import VisionTransformer, PatchEmbed
 from .modeling.swin_transformer import SwinTransfomerSegHead
-import torch.nn.functional as F
-
 
 class SimpleFPN(nn.Module):
     def __init__(self, in_dim=768, out_dims=[128, 256, 512, 1024]):
@@ -92,7 +87,7 @@ class PlainVitModel(ISModel):
 
     def backbone_forward(self, image, coord_features=None, points=None):
         coord_features = self.patch_embed_coords(coord_features)
-        backbone_features = self.backbone.forward_backbone(image, coord_features, self.random_split)
+        backbone_features, tokens = self.backbone.forward_backbone(image, coord_features, self.random_split, points=points)
 
         # Extract 4 stage backbone feature map: 1/4, 1/8, 1/16, 1/32
         B, N, C = backbone_features.shape
@@ -101,4 +96,4 @@ class PlainVitModel(ISModel):
         backbone_features = backbone_features.transpose(-1, -2).view(B, C, grid_size[0], grid_size[1])
         multi_scale_features = self.neck(backbone_features)
 
-        return {'instances': self.head(multi_scale_features), 'instances_aux': None}
+        return {'instances': self.head(multi_scale_features), 'instances_aux': None, 'tokens': tokens}

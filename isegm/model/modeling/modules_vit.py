@@ -4,6 +4,7 @@ import torch.nn as nn
 from functools import partial
 from collections import OrderedDict
 from .pos_embed import interpolate_pos_embed
+from .topk import batched_index_select
 
 
 class Mlp(nn.Module):
@@ -69,10 +70,36 @@ class Block(nn.Module):
         mlp_hidden_dim = int(dim * mlp_ratio)
         self.mlp = Mlp(in_features=dim, hidden_features=mlp_hidden_dim, act_layer=act_layer, drop=mlp_drop)
 
-    def forward(self, x):
+    def pt2patchidx(self, points, im_sz, patch_sz=16):
+        patchs = torch.div(points, patch_sz, rounding_mode='floor')
+        idxs = patchs[:, :, 0] * (im_sz // patch_sz) + patchs[:, :, 1]
+        idxs = idxs.int()
+        return idxs
+
+    def forward(self, x, points=None):
         x = x + self.attn(self.norm1(x))
         x = x + self.mlp(self.norm2(x))
-        return x
+        tokens = {}
+        if points is not None:
+            idxs16 = self.pt2patchidx(points, 448, patch_sz=16)
+            B, n_p, _ = points.shape
+            mask = idxs16[:, :(n_p // 2)] >= 0
+            ids = idxs16[:, :(n_p // 2)].clone().long()
+            ids[~mask] = 0  # 将无点击区域的id置为0
+
+            clicked_tokens = batched_index_select(x, 1, ids) * mask.unsqueeze(-1)  # 提取点击区域的tokens，并将无点击区域的id置为0
+            kernels = []
+            for i in range(B):
+                if True not in mask[i]:
+                    kernels.append(clicked_tokens[i].mean(dim=0, keepdim=True))
+                else:
+                    kernels.append(clicked_tokens[i][mask[i]].mean(dim=0, keepdim=True))
+
+            tokens['x'] = x
+            tokens['idx'] = torch.range(0, x.shape[1]-1).unsqueeze(0).repeat(B, 1).type_as(x).long()
+
+            tokens['kernels'] = torch.cat(kernels)
+        return x, tokens
 
 
 class PatchEmbed(nn.Module):
@@ -249,7 +276,9 @@ class VisionTransformer(nn.Module):
 
         return x
 
-    def forward_backbone(self, x, additional_features=None, shuffle=False):
+
+
+    def forward_backbone(self, x, additional_features=None, shuffle=False, points=None):
         x = self.patch_embed(x)
         if additional_features is not None:
             x += additional_features
@@ -258,6 +287,7 @@ class VisionTransformer(nn.Module):
         num_blocks = len(self.blocks)
         assert num_blocks % 4 == 0
 
+        tokens = []
         if shuffle:
             for i in range(1, num_blocks + 1):
                 x, ids_restore = self.shuffle(x)
@@ -278,8 +308,12 @@ class VisionTransformer(nn.Module):
                 else:
                     x = self.unpatchify(x)
                     is_patchified = False
-                x = self.blocks[i-1](x)
-        return x
+                if is_patchified:
+                    x, _ = self.blocks[i-1](x)
+                else:
+                    x, token = self.blocks[i - 1](x, points=points)
+                    tokens.append(token)
+        return x, tokens
 
     def forward(self, x):
         x = self.patch_embed(x)

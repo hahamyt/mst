@@ -6,17 +6,15 @@ Online [Demo](http://img2latex.com/).
 
 ## Download weights
 
-### ViT-B-1024
+### ViT-B+CL
 
-[+MST-3s](https://cuhko365-my.sharepoint.com/:u:/g/personal/xulong_cuhk_edu_cn/EQPswrQ8MsJHhdZNKIgdBIoB5lGLpwIcrWXyhXmNjPQbpg?e=aQ1RtW)
-
-[+MST+CL-3s](https://cuhko365-my.sharepoint.com/:u:/g/personal/xulong_cuhk_edu_cn/EbyTj7JJlmxMl36e2cRNTogBLd7D_A0M51AxBjsmqP7Giw?e=t2p63a)
+[SimpleClick-ViT-B+CL](https://cuhko365-my.sharepoint.com/:u:/g/personal/xulong_cuhk_edu_cn/EeILxdvoPkpNrMkIcf1hSxUB19xePMqGa-d_CZxsBITohQ?e=0O8fxz)
 
 
 ## Eval
 
 ```shell
-python evaluate_model.py NoBRS --gpu=1 --checkpoint=weights/mst+cl-B-3s-1024.pth --datasets=DAVIS --cf-n=3 --acf --n-clicks 20 --target-iou 0.9 --inference_size 1024
+python evaluate_model.py NoBRS --gpu=1 --checkpoint=weights/vitb+cl.pth --datasets=DAVIS --cf-n=3 --acf --n-clicks 20 --target-iou 0.9 --inference_size 1024
 ```
 
 

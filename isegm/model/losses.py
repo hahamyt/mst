@@ -326,3 +326,70 @@ class ScoreLoss(nn.Module):
 
     def log_states(self, sw, name, global_step):
         pass
+
+class PatchLossViT(nn.Module):
+    def __init__(self):
+        super(PatchLossViT, self).__init__()
+        self.loss_fn = TripletLoss()
+
+    def forward(self, f_q, f_k, tau=0.07):
+        B, _, H, W = f_k.shape
+        total_loss = 0.0
+        total_times = 0  # Number of times we compute the loss
+
+        # Process all blocks to reduce variance
+        for block in range(len(f_q)):
+            sel_tokens_s = f_q[block]['x']  # [B, T_s, C]
+            idx_tokens_s = f_q[block]['idx']  # [B, T_s]
+            kernel_s = f_q[block]['kernels']  # [B, C, 1]
+
+            # Remove zero tokens (entirely zero across batch and feature dimensions)
+            mask_s = sel_tokens_s.abs().sum(dim=(0, 2)) != 0  # [T_s]
+            sel_tokens_s = sel_tokens_s[:, mask_s, :]  # [B, T_s', C]
+            idx_tokens_s = idx_tokens_s[:, mask_s]  # [B, T_s']
+
+            # Interpolate f_k to required scales
+            f_k_resized_s = F.interpolate(f_k, scale_factor=1 / 16, mode='nearest')  # [B, C, H_s, W_s]
+
+            # Create valid masks
+            valid_mask_s = f_k_resized_s.sum(dim=1) > 0  # [B, H_s, W_s]
+
+            # Flatten valid masks and indices
+            valid_idx_s = valid_mask_s.view(B, -1)  # [B, N_s]
+
+            # Process batch samples
+            for i in range(B):
+                # Small tokens
+                idx_gt_s = valid_idx_s[i].nonzero(as_tuple=False).squeeze(-1)
+                idx_token_s = idx_tokens_s[i]
+                common_indices_s = torch.tensor(list(set(idx_gt_s.cpu().numpy()) & set(idx_token_s.cpu().numpy())),
+                                                device=f_k.device)
+
+                if common_indices_s.numel() == 0 or common_indices_s.numel() == idx_token_s.numel():
+                    continue  # Skip if no valid triplets can be formed
+
+                # Create a mask for positive and negative tokens
+                pos_mask_s = torch.isin(idx_token_s, common_indices_s)
+                neg_mask_s = ~pos_mask_s
+
+                # Ensure there are positives and negatives
+                if pos_mask_s.sum() == 0 or neg_mask_s.sum() == 0:
+                    continue
+
+                # Extract tokens
+                pos_tokens_s = sel_tokens_s[i, pos_mask_s, :]  # [num_pos, C]
+                neg_tokens_s = sel_tokens_s[i, neg_mask_s, :]  # [num_neg, C]
+                anchor_s = kernel_s[i].squeeze(-1)  # [C]
+
+                # Compute triplet loss for small tokens
+                loss_s = self.loss_fn(anchor_s.unsqueeze(0), pos_tokens_s, neg_tokens_s)
+                total_loss += loss_s
+                total_times += 1
+
+        if total_times == 0:
+            # No loss computed, return zero with requires_grad
+            total_loss = torch.tensor(0.0, device=f_k.device, requires_grad=True)
+        else:
+            total_loss = total_loss / total_times
+
+        return total_loss
