@@ -283,7 +283,6 @@ class MoEMlp(nn.Module):
             nn.Linear(hidden_features, out_features),
             nn.Dropout(drop)
         )
-        # 专家2，处理 'l' tokens
         self.expert_l = nn.Sequential(
             nn.Linear(in_features, hidden_features),
             act_layer(),
