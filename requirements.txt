@@ -1,0 +1,16 @@
+numpy
+opencv-python
+matplotlib
+torch
+torchvision
+albumentations
+PyYAML
+easydict
+tensorboard
+albumentations
+mmcv
+timm
+Cython
+protobuf
+einops
+scikit-image
