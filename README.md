@@ -34,6 +34,8 @@ A script `download_datasets.sh` is prepared to download and organize required da
 |DAVIS      |  345 images with one object each (test)      |  [DAVIS.zip (43 MB)][DAVIS]          |
 |Pascal VOC |  1449 images with 3417 instances (test)      |  [official site][PascalVOC]          |
 |COCO_MVal  |  800 images with 800 instances (test)        |  [COCO_MVal.zip (127 MB)][COCO_MVal] |
+|Multi-Scale LoveDA  |  1666 images with 31,908 instances (test)        |  [LoveDAMS.zip (1.4 GB)][LoveDAMS] |
+
 
 [MSCOCO]: https://cocodataset.org/#download
 [LVIS]: https://www.lvisdataset.org/dataset
@@ -44,6 +46,7 @@ A script `download_datasets.sh` is prepared to download and organize required da
 [PascalVOC]: http://host.robots.ox.ac.uk/pascal/VOC/
 [COCOLVIS_annotation]: https://github.com/saic-vul/ritm_interactive_segmentation/releases/download/v1.0/cocolvis_annotation.tar.gz
 [COCO_MVal]: https://github.com/saic-vul/fbrs_interactive_segmentation/releases/download/v1.0/COCO_MVal.zip
+[LoveDAMS]: https://drive.google.com/file/d/1ryl2uqV99WV9_XUbOWNQbfvYGqGbJFg7/view?usp=sharing
 
 ## Demo
 
