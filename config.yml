@@ -1,0 +1,26 @@
+INTERACTIVE_MODELS_PATH: ""
+EXPS_PATH: "./experiments"
+
+# Evaluation datasets
+DAVIS_PATH:  "/root/datasets/DAVIS"
+COCO_MVAL_PATH: "/root/datasets/COCO_MVal"
+PASCALVOC_PATH: "/root/datasets/VOCdevkit/VOC2012"
+IS_LoveDA_PATH: "/root/datasets/IS_LOVEDA"
+
+# Train datasets
+SBD_PATH:  "/root/datasets/SBD_benchmark_RELEASE/dataset"
+COCO_PATH: "./isegm_datasets/MSCOCO"
+LVIS_v1_PATH: "/root/tmpdata/COCO_LVIS"
+
+# You can download the weights for HRNet from the repository:
+# https://github.com/HRNet/HRNet-Image-Classification
+IMAGENET_PRETRAINED_MODELS:
+  MAE_BASE: "./pretrained_models/mae_pretrain_vit_base.pth"
+  MAE_LARGE: "./pretrained_models/mae_pretrain_vit_large.pth"
+  MAE_HUGE: "./pretrained_models/mae_pretrain_vit_huge.pth"
+  SBD_VIT_BASE: "./weights/sbd_vit_base.pth"
+  SBD_VIT_LARGE: "./weights/sbd_vit_large.pth"
+  SBD_VIT_HUGE: "./weights/sbd_vit_huge.pth"
+  VIT_BASE: "./weights/cocolvis_vit_base.pth"
+  VIT_LARGE: "./weights/cocolvis_vit_large.pth"
+  VIT_HUGE: "./weights/cocolvis_vit_huge.pth"
