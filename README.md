@@ -114,8 +114,8 @@ python dis_train.py models/adaptivevit_base448_cclvs.py\
 |            |              |        | +IT  | [github](https://github.com/hahamyt/mst/tree/it)                 | [weight](https://github.com/hahamyt/mst/tree/it)        | [github](https://github.com/hahamyt/mst/tree/it) | [weight](https://github.com/hahamyt/mst/tree/it)        |
 |            |              |        | +MST | [github](https://github.com/hahamyt/mst/tree/mst-224)            | [weight](https://github.com/hahamyt/mst/tree/mst-224)   | [github](https://github.com/hahamyt/mst/tree/mst-224) | [weight](https://github.com/hahamyt/mst/tree/mst-224)   |
 |            |              |        | +MST+CL | [github](https://github.com/hahamyt/mst/tree/mst-224)          | [weight](https://github.com/hahamyt/mst/tree/mst-224)   | [github](https://github.com/hahamyt/mst/tree/mst-224) | [weight](https://github.com/hahamyt/mst/tree/mst-224)   |
-|            |              | ViT-L  | +MST | [github](https://github.com/hahamyt/mst/tree/mst-224-large)      | -   | -                                                                   | -   |
-|            |              |        | +MST+CL | [github](https://github.com/hahamyt/mst/tree/mst-224-large)    | -   | -                                                                   | -   |
+|            |              | ViT-L  | +MST | [github](https://github.com/hahamyt/mst/tree/mst-224-large)      | [weight](https://github.com/hahamyt/mst/tree/mst-224-large)   | -                                                                   | -   |
+|            |              |        | +MST+CL | [github](https://github.com/hahamyt/mst/tree/mst-224-large)    | [weight](https://github.com/hahamyt/mst/tree/mst-224-large)   | -                                                                   | -   |
 | 1024*1024  | COCO-LVIS+HQ | ViT-B  | +MST-3s | [github](https://github.com/hahamyt/mst/tree/mst-1024-hqseg44k) | [weight](https://github.com/hahamyt/mst/tree/mst-1024-hqseg44k) | - | - |
 | Multi-Scale Datasets | | | | [Download Link](https://drive.google.com/file/d/1ryl2uqV99WV9_XUbOWNQbfvYGqGbJFg7/view?usp=sharing) | | | |
 
