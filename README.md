@@ -3,7 +3,7 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2401.04403-b31b1b.svg)](https://arxiv.org/abs/2401.04403)
 
 <p align="center">
-  <img src="./assets/img/framework.png" alt="drawing", width="600"/>
+  <img src="./assets/img/framework.png" alt="drawing", width="850"/>
 </p>
 
 <p>
