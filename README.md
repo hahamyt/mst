@@ -106,9 +106,9 @@ python dis_train.py models/adaptivevit_base448_cclvs.py\
 
 | Res        | Train Data   | Arch   |      | 3s                                                                 |     | 6s                                                                 |     |
 |------------|--------------|--------|------|---------------------------------------------------------------------|-----|---------------------------------------------------------------------|-----|
-| 448*448    | COCO-LVIS    | ViT-B  | +CL  | [github](https://github.com/hahamyt/mst/tree/vit-b-cl)            | -   | [github](https://github.com/hahamyt/mst/tree/vit-b-cl)            | -   |
-|            |              |        | +MST | [github](https://github.com/hahamyt/mst/tree/mst-448)             | -   | [weight](https://github.com/hahamyt/mst/tree/mst-448)             | -   |
-|            |              |        | +MST+CL | [github](https://github.com/hahamyt/mst/tree/mst-448)          | -   | [weight](https://github.com/hahamyt/mst/tree/mst-448)             | -   |
+| 448*448    | COCO-LVIS    | ViT-B  | +CL  | [github](https://github.com/hahamyt/mst/tree/vit-b-cl)            | [weight](https://github.com/hahamyt/mst/tree/vit-b-cl)   | -            | -   |
+|            |              |        | +MST | [github](https://github.com/hahamyt/mst/tree/mst-448)             | [weight](https://github.com/hahamyt/mst/tree/mst-448)   | -             | -   |
+|            |              |        | +MST+CL | [github](https://github.com/hahamyt/mst/tree/mst-448)          | [weight](https://github.com/hahamyt/mst/tree/mst-448)   | -             | -   |
 | 224*224    | COCO-LVIS    | ViT-B  | +UpConv | [github](https://github.com/hahamyt/mst/tree/upconv)             | [weight](https://github.com/hahamyt/mst/tree/upconv) | [github](https://github.com/hahamyt/mst/tree/upconv) | [weight](https://github.com/hahamyt/mst/tree/upconv) |
 |            |              |        | +AT  | [github](https://github.com/hahamyt/mst/tree/at)                 | [weight](https://github.com/hahamyt/mst/tree/at)        | [github](https://github.com/hahamyt/mst/tree/at) | [weight](https://github.com/hahamyt/mst/tree/at)        |
 |            |              |        | +IT  | [github](https://github.com/hahamyt/mst/tree/it)                 | [weight](https://github.com/hahamyt/mst/tree/it)        | [github](https://github.com/hahamyt/mst/tree/it) | [weight](https://github.com/hahamyt/mst/tree/it)        |
