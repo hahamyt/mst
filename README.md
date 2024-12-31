@@ -50,7 +50,7 @@ A script `download_datasets.sh` is prepared to download and organize required da
 
 ## Demo
 
-Online [Demo](http://img2latex.com/) (Coming Soon).
+Online [Demo](https://img2latex.com/isdemo).
 
 <p align="center">
   <img src="./assets/img/demo1.gif" alt="drawing", width="500"/>
