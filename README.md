@@ -123,11 +123,12 @@ python dis_train.py models/adaptivevit_base448_cclvs.py\
 ## Citation
 
 ```
-@article{xu2024mst,
+@article{xu2025mst,
   title={MST: Adaptive Multi-Scale Tokens Guided Interactive Segmentation},
-  author={Xu, Long and Li, Shanghong and Chen, Yongquan and Luo, Jun and Lai, Shiwu},
-  journal={arXiv preprint arXiv:2401.04403},
-  year={2024}
+  author={Xu, Long and Chen, Yongquan and Li, Shanghong and Luo, Jun and Chen, Yidong},
+  journal={IEEE Transactions on Circuits and Systems for Video Technology},
+  year={2025},
+  publisher={IEEE}
 }
 ```
 
